@@ -1,6 +1,6 @@
 package classifier;
 
-import core.Alignment;
+import core.MaxAlignment;
 import data.Dataset;
 import functions.Func;
 import util.Array;
@@ -15,12 +15,12 @@ import java.util.HashSet;
  */
 public class Log {
 
-    Softmax m_model;
+    MaxSoftmax m_model;
     String m_path;
     String m_data;
     String m_type;       // "0" = training set; "1" = test set
 
-    public Log(Softmax model, String path, String data, int elasticity) {
+    public Log(MaxSoftmax model, String path, String data, int elasticity) {
         m_model = model;
         m_path = path;
         m_data = data + "_E" + elasticity;
@@ -50,10 +50,10 @@ public class Log {
 
         for(int i = 0; i < numX; i++) {
             double[] x = X.pattern(i);
-            Alignment[] A = new Alignment[outUnits];
+            MaxAlignment[] A = new MaxAlignment[outUnits];
             double[] a = new double[outUnits];
             for(int j = 0; j < outUnits; j++) {
-                A[j] = new Alignment(x, W[j]);
+                A[j] = new MaxAlignment(x, W[j]);
                 a[j] = A[j].sim();
 
                 int[][] P = A[j].path();

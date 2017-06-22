@@ -126,6 +126,17 @@ public final class Array {
         return val;
     }
 
+    public static int indexOfMin(double[] x) {
+        int n = x.length;
+        int idx = 0;
+        for (int i = 1; i < n; i++) {
+            if (x[idx] > x[i]) {
+                idx = i;
+            }
+        }
+        return idx;
+    }
+
     public static int indexOfMax(double[] x) {
         int n = x.length;
         int idx = 0;

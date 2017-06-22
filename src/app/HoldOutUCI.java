@@ -47,6 +47,6 @@ public class HoldOutUCI extends HoldOut {
         if (X == null) {
             Msg.error("Error. Training set is missing.");
         }
-        return X.split(0.5);
+        return X.split(0.25);
     }
 }

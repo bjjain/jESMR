@@ -12,9 +12,7 @@ class Parameter {
     static final int A_ADAM     = 4;    // ssg + adam
 
     int A = 0;                          // optimization technique
-    int W = -1;                         // number of epochs neighborhood is active
-    int w = 1;                          // neighborhood nh_w
-    double s = 1.0;                     // neighborhood nh_s
+    int p = 1;                          // partitions
     int e = 3;                          // elasticity
     double l = 0.001;                   // learning rate
     double r = 0.0;                     // regularization: weight decay
@@ -38,9 +36,7 @@ class Parameter {
 
     Parameter(Parameter param) {
         A = param.A;
-        W = param.W;
-        w = param.w;
-        s = param.s;
+        p = param.p;
         e = param.e;
         l = param.l;
         r = param.r;
@@ -57,9 +53,7 @@ class Parameter {
     private void setOptions() {
         opts = new Options();
         opts.put("-A", Double.toString(A));
-        opts.put("-W", Double.toString(W));
-        opts.put("-w", Double.toString(w));
-        opts.put("-s", Double.toString(s));
+        opts.put("-p", Double.toString(p));
         opts.put("-e", Double.toString(e));
         opts.put("-l", Double.toString(l));
         opts.put("-r", Double.toString(r));
@@ -81,17 +75,12 @@ class Parameter {
                 error(flag, A);
             }
         }
-        flag = "-W";
+        flag = "-p";
         if (opts.containsKey(flag)) {
-            W = opts.getInt(flag);
-        }
-        flag = "-w";
-        if (opts.containsKey(flag)) {
-            w = opts.getInt(flag);
-        }
-        flag = "-s";
-        if (opts.containsKey(flag)) {
-            s = opts.getDouble(flag);
+            p = opts.getInt(flag);
+            if (p <= 0) {
+                error(flag, p);
+            }
         }
         flag = "-e";
         if (opts.containsKey(flag)) {
@@ -158,7 +147,7 @@ class Parameter {
     }
 
     String getParams() {
-        return  " -A " + A + " -W " + W + " -w " + w + " -s " + s + " -e " + e +
+        return " -A " + A + " -p " + p + " -e " + e +
                 " -l " + l + " -r " + r + " -m " + m + " -r1 " + r1 +
                 " -r2 " + r2 + " -T " + T + " -S " + S + " -o " + o + " ";
     }
@@ -176,9 +165,7 @@ class Parameter {
                 + "     2 -- SSG + adagrad %n"
                 + "     3 -- SSG + adadelta %n"
                 + "     4 -- SSG + adam %n"
-                + "-W  <int>    : epochs neighborhood is actice (default " + W + ")%n"
-                + "-w  <int>    : nh_w of neighborhood (default " + w + ")%n"
-                + "-s  <double> : neighborhood nh_s (default " + s + ")%n"
+                + "-p  <int>    : partitions > 0 (default " + p + ")%n"
                 + "-e  <int>    : elasticity > 0 (default " + e + ")%n"
                 + "-l  <double> : learning rate > 0 (default " + l + ")%n"
                 + "-r  <double> : weight decay >= 0 (default " + r + ")%n"

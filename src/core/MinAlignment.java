@@ -35,17 +35,17 @@ public final class MinAlignment {
             scores[0][j] = scores[0][j - 1] + x[0] * w[0][j];
         }
 
-        double max;
+        double min;
         for (i = 1; i < xlen; i++) {
             for (j = 1; j < wlen; j++) {
-                max = scores[i - 1][j];
-                if (scores[i][j - 1] > max) {
-                    max = scores[i][j - 1];
+                min = scores[i - 1][j];
+                if (scores[i][j - 1] < min) {
+                    min = scores[i][j - 1];
                 }
-                if (scores[i - 1][j - 1] > max) {
-                    max = scores[i - 1][j - 1];
+                if (scores[i - 1][j - 1] < min) {
+                    min = scores[i - 1][j - 1];
                 }
-                scores[i][j] = max + x[i] * w[i][j];
+                scores[i][j] = min + x[i] * w[i][j];
             }
         }
         return scores[xlen - 1][wlen - 1];
@@ -95,21 +95,21 @@ public final class MinAlignment {
             m_direction[0][j] = 1;
         }
 
-        double max;
+        double min;
         int i0;
         for (i = 1; i < xlen; i++) {
             for (j = 1; j < wlen; j++) {
-                max = m_scores[i - 1][j];
+                min = m_scores[i - 1][j];
                 i0 = 0;
-                if (m_scores[i][j - 1] > max) {
-                    max = m_scores[i][j - 1];
+                if (m_scores[i][j - 1] < min) {
+                    min = m_scores[i][j - 1];
                     i0 = 1;
                 }
-                if (m_scores[i - 1][j - 1] > max) {
-                    max = m_scores[i - 1][j - 1];
+                if (m_scores[i - 1][j - 1] < min) {
+                    min = m_scores[i - 1][j - 1];
                     i0 = 2;
                 }
-                m_scores[i][j] = max + x[i] * w[i][j];
+                m_scores[i][j] = min + x[i] * w[i][j];
                 m_direction[i][j] = i0;
             }
         }

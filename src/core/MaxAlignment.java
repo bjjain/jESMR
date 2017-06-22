@@ -1,6 +1,6 @@
 package core;
 
-public final class Alignment {
+public final class MaxAlignment {
 
     double[][] m_scores;
     int[][] m_direction;
@@ -8,7 +8,7 @@ public final class Alignment {
     private double m_sim;
 
 
-    public Alignment(double[] x, double[][] w) {
+    public MaxAlignment(double[] x, double[][] w) {
         m_sim = computeSimilarity(x, w);
         m_path = computePath();
     }
@@ -49,6 +49,16 @@ public final class Alignment {
             }
         }
         return scores[xlen-1][wlen -1];
+    }
+
+    private static double[][] stretch(double[][] y, int nx) {
+        int n = y.length;
+        int m = y[0].length;
+        double[][] _y = new double[nx][m];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(y[i], 0, _y[i], 0, m);
+        }
+        return _y;
     }
 
     public double sim() {
@@ -102,16 +112,6 @@ public final class Alignment {
             }
         }
         return m_scores[xlen-1][wlen -1];
-    }
-
-    private static double[][] stretch(double[][] y, int nx) {
-        int n = y.length;
-        int m = y[0].length;
-        double[][] _y = new double[nx][m];
-        for(int i = 0; i < n; i++) {
-            System.arraycopy(y[i], 0, _y[i], 0, m);
-        }
-        return _y;
     }
 
     private int[][] computePath() {

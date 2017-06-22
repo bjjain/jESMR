@@ -1,13 +1,12 @@
 package app;
 
+import app.utils.Util;
 import classifier.Classifier;
 import classifier.Log;
-import classifier.PolySoftmax;
-import classifier.Softmax;
+import classifier.MaxSoftmax;
 import core.Options;
 import data.Dataset;
 import preprocess.Preprocessor;
-import util.Msg;
 import util.Rand;
 import util.Writer;
 
@@ -20,16 +19,19 @@ public abstract class HoldOut {
 
     //### OPTIONS ##############################################################
 
-    String dataset = "sonar";
+    String dataset = "mnist";
 
     //--- type of classifier
     //  0 : elastic softmax
     //  1 : polyhedral max softmax
-    int typeClf = 1;
+    //  2 : min elastic softmax
+    //  3 : max-min elastic softmax
+    //  4 : min-max elastic softmax
+    int typeClf = 0;
 
     //--- options
-    String optPP = "-p0 0 -p1 0 -a 1 -b 0.1";
-    String optSM = "-e 20 -A 4 -l 0.1 -r 0.0 -m 0.9 -r1 0.9 -r2 0.999 -T 1000 -S 100 -o 3";
+    String optPP = "-p0 0 -p1 0 -a 1 -b -0.1";
+    String optSM = "-p 20 -e 10 -A 4 -l 0.01 -r 0.0 -m 0.9 -r1 0.9 -r2 0.999 -T 500 -S 100 -o 3";
 
     //--- flag for logging results: 0 - no logging #  1 - logs results
     int LOG = 0;
@@ -44,9 +46,6 @@ public abstract class HoldOut {
     public void apply() {
         Rand.setSeed(seed);
 
-        // set options
-
-
         // get data
         Dataset[] folds = getData();
         Dataset train = folds[0];
@@ -59,7 +58,7 @@ public abstract class HoldOut {
         test = pre.apply(test);
 
         // evaluate
-        Classifier clf = getClassifier();
+        Classifier clf = Util.getClassifier(typeClf, optSM);
         clf.fit(train);
         double accTrain = clf.score(train);
         double accTest = clf.score(test);
@@ -70,24 +69,13 @@ public abstract class HoldOut {
         // log
         if (0 < LOG && typeClf == 0) {
             Options opts = new Options(optSM);
-            Log logger = new Log((Softmax) clf, logpath, dataset, opts.getInt("-e"));
+            Log logger = new Log((MaxSoftmax) clf, logpath, dataset, opts.getInt("-e"));
             logger.log(train, 0);
             logger.log(test, 1);
         }
     }
 
     abstract Dataset[] getData();
-
-    private Classifier getClassifier() {
-        if (typeClf == 0) {
-            return new Softmax(optSM);
-        } else if (typeClf == 1) {
-            return new PolySoftmax(optSM);
-        } else {
-            Msg.error("Error! Unknown type of classifier: %d.", typeClf);
-        }
-        return null;
-    }
 
     private void log(double accTrain, double accTest) {
         Date date = new Date();
