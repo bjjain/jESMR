@@ -1,6 +1,6 @@
 package classifier;
 
-import core.MaxMinAlignment;
+import core.MaxAlignment;
 import core.Options;
 import data.Dataset;
 import data.Pattern;
@@ -13,17 +13,17 @@ import util.Rand;
 /**
  * Created by jain on 24/03/2017.
  */
-public class MaxMinSoftmax extends Classifier {
+public class SemiMaxSoftmax extends Classifier {
 
     int m_numLabels;        // number of labels
-    int m_numPartitions;    // number of partitions
-    double[][][][] m_W;     // weights
+    double[][][] m_W;       // weights
+    double[] m_b;           // bias
     Func m_F;               // output function
 
     Rand m_random;
     Parameter m_params;
 
-    public MaxMinSoftmax(String opts) {
+    public SemiMaxSoftmax(String opts) {
         m_random = Rand.getInstance();
         m_params = new Parameter(opts);
     }
@@ -40,7 +40,6 @@ public class MaxMinSoftmax extends Classifier {
      */
     public int fit(Dataset train) {
         m_numLabels = train.numLabels();
-        m_numPartitions = m_params.p;
         m_F = new FuncSoftMax();
         SSG ssg = new SSG(train);
         int S = ssg.fit();
@@ -57,14 +56,14 @@ public class MaxMinSoftmax extends Classifier {
     private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
-            a[j] = MaxMinAlignment.sim(x.sequence(), m_W[j]);
+            a[j] = MaxAlignment.sim(x.sequence(), m_W[j]) + m_b[j];
         }
         return a;
     }
 
     @FunctionalInterface
     interface Update {
-        double apply(double grad, int j, int p, int r, int s);
+        double apply(double grad, int j, int r, int s);
     }
 
 
@@ -76,7 +75,6 @@ public class MaxMinSoftmax extends Classifier {
 
         // hyper-parameters
         int type;           // type of solver
-        int numPartitions;  // number of partitions
         int elasticity;     // elasticity
         double eta;         // current learning rate
         double mu;          // momentum
@@ -90,9 +88,10 @@ public class MaxMinSoftmax extends Classifier {
         int numX;           // sample size
 
         // auxiliary variables
-        double[][][][] M;     // first moment
-        double[][][][] V;     // second moment
-        MaxMinAlignment[] A;  // alignment
+        double[][][] M;     // first moment
+        double[][][] V;     // second moment
+        double[] a;         // activate
+        MaxAlignment[] A;      // alignment
 
         // update method
         Update ssg;
@@ -113,7 +112,6 @@ public class MaxMinSoftmax extends Classifier {
             // set hyper-parameters
             type = m_params.A;
             elasticity = m_params.e;
-            numPartitions = m_numPartitions;
             eta = m_params.l;
             mu = m_params.m;
             lambda = m_params.r;
@@ -127,16 +125,18 @@ public class MaxMinSoftmax extends Classifier {
 
             // set auxiliary variables
             if (type != Parameter.A_SGD) {
-                M = new double[outUnits][numPartitions][inUnits][elasticity];
+                M = new double[outUnits][inUnits][elasticity];
             }
             if (type == Parameter.A_ADAM) {
-                V = new double[outUnits][numPartitions][inUnits][elasticity];
+                V = new double[outUnits][inUnits][elasticity];
             }
-            A = new MaxMinAlignment[outUnits];
+            a = new double[outUnits];
+            A = new MaxAlignment[outUnits];
 
             // initialize weights
             double sigma = Math.sqrt(inUnits);
-            m_W = m_random.nextArray(outUnits, numPartitions, inUnits, elasticity, sigma);
+            m_W = m_random.nextArray(outUnits, inUnits, elasticity, sigma);
+            m_b = m_random.nextArray(outUnits, sigma);
 
             // set optimization technique
             setSSG();
@@ -154,19 +154,18 @@ public class MaxMinSoftmax extends Classifier {
                     double[] xi = X[f[i]];
                     int yi = y[f[i]];
 
-                    // compute activation
-                    double[] a = new double[outUnits];
+                    // compute activate
                     for (int j = 0; j < outUnits; j++) {
-                        A[j] = new MaxMinAlignment(xi, m_W[j]);
-                        a[j] = A[j].sim();
+                        A[j] = new MaxAlignment(xi, m_W[j]);
+                        a[j] = A[j].sim() + m_b[j];
                     }
 
                     // update
                     double[] z = m_F.apply(a);
                     double[] delta = m_F.derivative(z, yi);
                     for (int j = 0; j < outUnits; j++) {
-                        int p = A[j].indexOfMax();
-                        double[][] wj = m_W[j][p];
+                        m_b[j] -= eta * delta[j];
+                        double[][] wj = m_W[j];
                         int[][] path = A[j].path();
                         int len = path.length;
                         int r, s;
@@ -174,7 +173,7 @@ public class MaxMinSoftmax extends Classifier {
                             r = path[l][0]; // max_idx of input x
                             s = path[l][1]; // max_idx of elasticity
                             double grad = delta[j] * xi[r] + lambda * wj[r][s];
-                            wj[r][s] -= ssg.apply(grad, j, p, r, s);
+                            wj[r][s] -= ssg.apply(grad, j, r, s);
                         }
                     }
                 }
@@ -189,28 +188,28 @@ public class MaxMinSoftmax extends Classifier {
         private Update setSSG() {
             ssg = null;
             if (type == Parameter.A_SGD) {
-                ssg = (grad, j, p, r, s) -> eta * grad;
+                ssg = (grad, j, r, s) -> eta * grad;
             } else if (type == Parameter.A_MOMENTUM) {
-                ssg = (grad, j, p, r, s) -> {
-                    M[j][p][r][s] = mu * M[j][p][r][s] - eta * grad;
-                    return -M[j][p][r][s];
+                ssg = (grad, j, r, s) -> {
+                    M[j][r][s] = mu * M[j][r][s] - eta * grad;
+                    return -M[j][r][s];
                 };
             } else if (type == Parameter.A_ADAGRAD) {
-                ssg = (grad, j, p, r, s) -> {
-                    M[j][p][r][s] += grad * grad;
-                    return eta * grad / (Math.sqrt(M[j][p][r][s]) + 10E-8);
+                ssg = (grad, j, r, s) -> {
+                    M[j][r][s] += grad * grad;
+                    return eta * grad / (Math.sqrt(M[j][r][s]) + 10E-8);
                 };
             } else if (type == Parameter.A_ADADELTA) {
-                ssg = (grad, j, p, r, s) -> {
-                    M[j][p][r][s] = rho1 * M[j][p][r][s] + (1 - rho1) * grad * grad;
-                    return eta * grad / (Math.sqrt(M[j][p][r][s]) + 10E-8);
+                ssg = (grad, j, r, s) -> {
+                    M[j][r][s] = rho1 * M[j][r][s] + (1 - rho1) * grad * grad;
+                    return eta * grad / (Math.sqrt(M[j][r][s]) + 10E-8);
                 };
             } else if (type == Parameter.A_ADAM) {
-                ssg = (grad, j, p, r, s) -> {
-                    M[j][p][r][s] = (rho1 * M[j][p][r][s] + (1 - rho1) * grad);
-                    V[j][p][r][s] = (rho2 * V[j][p][r][s] + (1 - rho2) * grad * grad);
-                    double m = M[j][p][r][s] / (1.0 - rho1);
-                    double v = V[j][p][r][s] / (1.0 - rho2);
+                ssg = (grad, j, r, s) -> {
+                    M[j][r][s] = (rho1 * M[j][r][s] + (1 - rho1) * grad);
+                    V[j][r][s] = (rho2 * V[j][r][s] + (1 - rho2) * grad * grad);
+                    double m = M[j][r][s] / (1.0 - rho1);
+                    double v = V[j][r][s] / (1.0 - rho2);
                     return eta * m / (Math.sqrt(v) + 10E-8);
                 };
             }
@@ -229,7 +228,7 @@ public class MaxMinSoftmax extends Classifier {
         double minLoss;         // minimum loss
         int numStable;          // epochs without improvement
         int maxStable;          // maximum number of stable epochs
-        double[][][][] optW;      // optimal model
+        double[][][] optW;      // optimal model
 
 
         Monitor(Dataset train) {
@@ -280,7 +279,7 @@ public class MaxMinSoftmax extends Classifier {
             return maxAcc < 1.0 && numStable < maxStable ? 0 : 1;
         }
 
-        double[][][][] optWeights() {
+        double[][][] optWeights() {
             return optW;
         }
 

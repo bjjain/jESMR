@@ -35,6 +35,7 @@ public class Writer {
         }
     }
 
+
     private void close() {
         try {
             if (writer != null) {

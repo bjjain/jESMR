@@ -18,10 +18,10 @@ public class Vis2D {
     //### OPTIONS ##############################################################
 
     //--- flag for logging results: 0 - no logging #  1 - logs results
-    private static final int LOG = 1;
+    private static final int LOG = 0;
     //--- options
     String optPP = "-zc 0 -zr 0 -p0 0 -p1 0 -a 1 -b 0.1";
-    String optSM = "-p 20 -e 10 -A 4 -l 0.01 -r 0.0 -m 0.5 -r1 0.9 -r2 0.9999 -T 5000 -S 1000 -o 3";
+    String optSM = "-p 20 -e 15 -A 4 -l 0.003 -r 0.0 -m 0.5 -r1 0.9 -r2 0.9999 -T 300000 -S 10000 -o 3";
     //--- data:
     //      0 = rings
     //      1 = swiss-roll
@@ -36,7 +36,9 @@ public class Vis2D {
     //  2 : min elastic softmax
     //  3 : max-min elastic softmax
     //  4 : min-max elastic softmax
-    int typeClf = 4;
+    //  5 : DTW softmax
+    //  6 : semi-elastic
+    int typeClf = 0;
     //--- number of elements per class
     int N = 500;
     //*** data-specific parameters

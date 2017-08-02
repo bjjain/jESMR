@@ -13,14 +13,14 @@ import java.util.HashSet;
 /**
  * Created by jain on 04.05.17.
  */
-public class Log {
+public class LogMaxSoftmax {
 
     MaxSoftmax m_model;
     String m_path;
     String m_data;
     String m_type;       // "0" = training set; "1" = test set
 
-    public Log(MaxSoftmax model, String path, String data, int elasticity) {
+    public LogMaxSoftmax(MaxSoftmax model, String path, String data, int elasticity) {
         m_model = model;
         m_path = path;
         m_data = data + "_E" + elasticity;

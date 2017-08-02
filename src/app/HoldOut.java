@@ -2,11 +2,12 @@ package app;
 
 import app.utils.Util;
 import classifier.Classifier;
-import classifier.Log;
+import classifier.LogMaxSoftmax;
 import classifier.MaxSoftmax;
 import core.Options;
 import data.Dataset;
 import preprocess.Preprocessor;
+import util.Array;
 import util.Rand;
 import util.Writer;
 
@@ -19,7 +20,7 @@ public abstract class HoldOut {
 
     //### OPTIONS ##############################################################
 
-    String dataset = "mnist";
+    static String dataset = "MedicalImages";
 
     //--- type of classifier
     //  0 : elastic softmax
@@ -27,11 +28,18 @@ public abstract class HoldOut {
     //  2 : min elastic softmax
     //  3 : max-min elastic softmax
     //  4 : min-max elastic softmax
+    //  5 : DTW softmax
+    //  6 : semi-elastic
     int typeClf = 0;
-
     //--- options
     String optPP = "-p0 0 -p1 0 -a 1 -b -0.1";
-    String optSM = "-p 20 -e 10 -A 4 -l 0.01 -r 0.0 -m 0.9 -r1 0.9 -r2 0.999 -T 500 -S 100 -o 3";
+    String optSM = "-p 20 -e 5 -A 4 -l 0.1 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 5000 -o 3";
+
+    // Time series
+    //String optSM = "-p 20 -e 3 -A 4 -l 0.03 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 1000 -S 100 -o 3";
+    // MNIST
+    //String optSM = "-p 20 -e 10 -A 4 -l 0.001 -r 0.0 -m 0.9 -r1 0.9 -r2 0.999 -T 500 -S 100 -o 3";
+
 
     //--- flag for logging results: 0 - no logging #  1 - logs results
     int LOG = 0;
@@ -43,7 +51,34 @@ public abstract class HoldOut {
     String logpath = "./results/";
 
 
-    public void apply() {
+    static void test() {
+        int[] ela = {3, 5, 7, 10, 15};
+        int numEla = ela.length;
+        double[][] acc = new double[2][numEla];
+        for (int typeclf = 0; typeclf < 2; typeclf++) {
+            for (int i = 0; i < numEla; i++) {
+                double lr = 0.3;
+                int status = -1;
+                while (status < 0) {
+                    lr /= 3.0;
+                    HoldOutUCR sm = new HoldOutUCR();
+                    sm.typeClf = typeclf;
+                    sm.optSM = "-e " + ela[i] + " -l " + lr
+                            + " -A 4 -r 0.0 -m 0.9 -r1 0.9 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 5000 -o 3";
+                    double[] result = sm.apply();
+                    status = (int) result[0];
+                    acc[typeclf][i] = 100.0 * result[2];
+                }
+            }
+        }
+        System.out.println();
+        System.out.println("Results: ");
+        System.out.println(dataset + " Polyhedral " + Array.toString(acc[1], "%5.2f "));
+        System.out.println(dataset + " Elastic    " + Array.toString(acc[0], "%5.2f "));
+
+    }
+
+    public double[] apply() {
         Rand.setSeed(seed);
 
         // get data
@@ -59,7 +94,8 @@ public abstract class HoldOut {
 
         // evaluate
         Classifier clf = Util.getClassifier(typeClf, optSM);
-        clf.fit(train);
+        int status = clf.fit(train);
+
         double accTrain = clf.score(train);
         double accTest = clf.score(test);
 
@@ -69,10 +105,12 @@ public abstract class HoldOut {
         // log
         if (0 < LOG && typeClf == 0) {
             Options opts = new Options(optSM);
-            Log logger = new Log((MaxSoftmax) clf, logpath, dataset, opts.getInt("-e"));
+            LogMaxSoftmax logger = new LogMaxSoftmax((MaxSoftmax) clf, logpath, dataset, opts.getInt("-e"));
             logger.log(train, 0);
             logger.log(test, 1);
         }
+
+        return new double[]{status, accTrain, accTest};
     }
 
     abstract Dataset[] getData();

@@ -19,6 +19,10 @@ public class Util {
             return new MaxMinSoftmax(opts);
         } else if (typeClf == 4) {
             return new MinMaxSoftmax(opts);
+        } else if (typeClf == 5) {
+            return new DTWSoftmax(opts);
+        } else if (typeClf == 6) {
+            return new SemiMaxSoftmax(opts);
         } else {
             Msg.error("Error! Unknown type of classifier: %d.", typeClf);
         }
