@@ -1,7 +1,9 @@
 package app;
 
+import core.Options;
 import data.ClassLabels;
 import data.Dataset;
+import util.Array;
 import util.Msg;
 import util.Reader;
 
@@ -20,13 +22,32 @@ public class HoldOutUCR extends HoldOut {
     }
 
     public static void main(String[] args) {
-        test();
+        test01();
     }
 
     static void test01() {
         HoldOutUCR sm = new HoldOutUCR();
         sm.apply();
     }
+
+    Options parse(String[] args) {
+        String s = Array.toString(args);
+        Options o = new Options("");
+        o.add(s);
+
+        String flag = "-dir";
+        if (o.containsKey(flag)) {
+            path = o.getString(flag);
+            o.remove(flag);
+        }
+        flag = "-ucr";
+        if (o.containsKey(flag)) {
+            dataset = o.getString(flag);
+            o.remove(flag);
+        }
+        return o;
+    }
+
 
     Dataset[] getData() {
         String f = path + dataset + "/" + dataset;

@@ -1,6 +1,6 @@
 package classifier;
 
-import core.MinAlignment;
+import core.MaxAlignment;
 import core.Options;
 import data.Dataset;
 import data.Pattern;
@@ -10,19 +10,17 @@ import util.Array;
 import util.Msg;
 import util.Rand;
 
-/**
- * Created by jain on 24/03/2017.
- */
-public class MinSoftmax extends Classifier {
+public class SemiElasticSoftmax extends Classifier {
 
     int m_numLabels;        // number of labels
     double[][][] m_W;       // weights
+    double[] m_b;           // bias
     Func m_F;               // output function
+    Parameter m_params;     // parameters
+    Status m_status;        // state of algorithm
+    Rand m_random;          // random number generator
 
-    Rand m_random;
-    Parameter m_params;
-
-    public MinSoftmax(String opts) {
+    public SemiElasticSoftmax(String opts) {
         m_random = Rand.getInstance();
         m_params = new Parameter(opts);
     }
@@ -31,21 +29,13 @@ public class MinSoftmax extends Classifier {
         return m_params.getOptions();
     }
 
-    /* Returns state of convergence:
-     *      -2 : loss diverges
-     *      -1 : loss oscillates
-     *       0 : loss decreases
-     *       1 : loss converged
-     */
-    public int fit(Dataset train) {
+    public Status fit(Dataset train) {
         m_numLabels = train.numLabels();
         m_F = new FuncSoftMax();
+        m_status = new Status(m_params.S);
         SSG ssg = new SSG(train);
-        int S = ssg.fit();
-        if (S < 0) {
-            Msg.warn("Warning! Decrease learning rate.");
-        }
-        return S;
+        ssg.fit();
+        return m_status;
     }
 
     public int predict(Pattern x) {
@@ -55,7 +45,7 @@ public class MinSoftmax extends Classifier {
     private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
-            a[j] = MinAlignment.sim(x.sequence(), m_W[j]);
+            a[j] = MaxAlignment.sim(x.sequence(), m_W[j]) + m_b[j];
         }
         return a;
     }
@@ -90,13 +80,8 @@ public class MinSoftmax extends Classifier {
         double[][][] M;     // first moment
         double[][][] V;     // second moment
         double[] a;         // activate
-        MinAlignment[] A;      // alignment
-
-        // update method
-        Update ssg;
-
-        // monitor class
-        Monitor monitor;
+        MaxAlignment[] A;   // alignment
+        Update ssg;         // update method
 
 
         SSG(Dataset data) {
@@ -105,12 +90,9 @@ public class MinSoftmax extends Classifier {
             X = data.patterns();
             y = data.labels();
 
-            // set monitor
-            monitor = new Monitor(data);
-
             // set hyper-parameters
             type = m_params.A;
-            elasticity = m_params.e;
+            elasticity = (int) Math.max(1, m_params.e);
             eta = m_params.l;
             mu = m_params.m;
             lambda = m_params.r;
@@ -130,21 +112,25 @@ public class MinSoftmax extends Classifier {
                 V = new double[outUnits][inUnits][elasticity];
             }
             a = new double[outUnits];
-            A = new MinAlignment[outUnits];
+            A = new MaxAlignment[outUnits];
 
             // initialize weights
             double sigma = Math.sqrt(inUnits);
             m_W = m_random.nextArray(outUnits, inUnits, elasticity, sigma);
+            m_b = m_random.nextArray(outUnits, sigma);
 
             // set optimization technique
             setSSG();
         }
 
-        int fit() {
-
+        void fit() {
+            // optimal model
+            double[][][] optW = Array.cp(m_W);
+            // output mode
+            boolean loggable = 0 < m_params.o;
+            // max iterations
             int T = m_params.T;
-            int S = 0;
-            for (int t = 1; t <= T && S == 0; t++) {
+            for (int t = 1; t <= T && m_status.state == 0; t++) {
                 int[] f = m_random.shuffle(numX);
                 for (int i = 0; i < numX; i++) {
 
@@ -154,14 +140,15 @@ public class MinSoftmax extends Classifier {
 
                     // compute activate
                     for (int j = 0; j < outUnits; j++) {
-                        A[j] = new MinAlignment(xi, m_W[j]);
-                        a[j] = A[j].sim();
+                        A[j] = new MaxAlignment(xi, m_W[j]);
+                        a[j] = A[j].sim() + m_b[j];
                     }
 
                     // update
                     double[] z = m_F.apply(a);
                     double[] delta = m_F.derivative(z, yi);
                     for (int j = 0; j < outUnits; j++) {
+                        m_b[j] -= eta * delta[j];
                         double[][] wj = m_W[j];
                         int[][] path = A[j].path();
                         int len = path.length;
@@ -174,13 +161,42 @@ public class MinSoftmax extends Classifier {
                         }
                     }
                 }
-                S = monitor.check(t);
-                monitor.info(t);
+                // check convergence
+                double[] result = eval();
+                m_status.set(result[0], result[1], t);
+
+                // store best model
+                if (m_status.updateModel) {
+                    optW = Array.cp(m_W);
+                }
+
+                // progress info
+                if (loggable) {
+                    m_status.info(t);
+                }
             }
-            m_W = monitor.optWeights();
-            return S;
+            m_W = optW;
+            if (m_status.decrLearningRate()) {
+                Msg.warn("Warning! Decrease learning rate.");
+            }
         }
 
+        private double[] eval() {
+            double acc = 0;
+            double loss = 0;
+            for (int i = 0; i < numX; i++) {
+                for (int j = 0; j < m_numLabels; j++) {
+                    a[j] = MaxAlignment.sim(X[i], m_W[j]) + m_b[j];
+                }
+                if (y[i] == m_F.predict(a)) {
+                    acc++;
+                }
+                loss += m_F.loss(a, y[i]);
+            }
+            acc /= (double) numX;
+            loss /= (double) numX;
+            return new double[]{acc, loss};
+        }
 
         private Update setSSG() {
             ssg = null;
@@ -211,80 +227,6 @@ public class MinSoftmax extends Classifier {
                 };
             }
             return ssg;
-        }
-    }
-
-
-    class Monitor {
-
-        Dataset X;              // training set
-        boolean loggable;       // output mode
-        double curAcc;          // current accuracy
-        double maxAcc;          // maximum accuracy
-        double curLoss;         // current loss
-        double minLoss;         // minimum loss
-        int numStable;          // epochs without improvement
-        int maxStable;          // maximum number of stable epochs
-        double[][][] optW;      // optimal model
-
-
-        Monitor(Dataset train) {
-            X = train;
-            loggable = 0 < m_params.o;
-            curAcc = -1;
-            maxAcc = 0;
-            curLoss = -1;
-            minLoss = Double.POSITIVE_INFINITY;
-            numStable = 0;
-            maxStable = m_params.S;
-            optW = Array.cp(m_W);
-        }
-
-        int check(int t) {
-            curAcc = 0;
-            curLoss = 0;
-            for (Pattern x : X) {
-                int y = x.label();
-                double[] a = activate(x);
-                if (y == m_F.predict(a)) {
-                    curAcc++;
-                }
-                curLoss += m_F.loss(a, y);
-            }
-            curAcc /= (double) X.size();
-            curLoss /= (double) X.size();
-
-            // check convergence
-            if (!Double.isFinite(curLoss)) {
-                return -2;
-
-            }
-            if (maxAcc <= curAcc) {
-                maxAcc = curAcc;
-            }
-            if (curLoss < minLoss) {
-                minLoss = curLoss;
-                numStable = 0;
-                optW = Array.cp(m_W);
-            } else {
-                numStable++;
-            }
-            double ratio = numStable / ((double) t);
-            if (20 <= t && t <= 100 && 0.2 < ratio) {
-                return -1;
-            }
-            return maxAcc < 1.0 && numStable < maxStable ? 0 : 1;
-        }
-
-        double[][][] optWeights() {
-            return optW;
-        }
-
-        private void info(int t) {
-            if (loggable) {
-                String s = "[ESMR] %5d  loss = %7.5f (%7.5f)  train = %1.3f (%1.3f)%n";
-                System.out.printf(s, t, curLoss, minLoss, curAcc, maxAcc);
-            }
         }
     }
 }

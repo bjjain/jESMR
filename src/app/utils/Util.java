@@ -3,26 +3,19 @@ package app.utils;
 import classifier.*;
 import util.Msg;
 
-/**
- * Created by jain on 22.06.17.
- */
 public class Util {
 
     public static Classifier getClassifier(int typeClf, String opts) {
         if (typeClf == 0) {
-            return new MaxSoftmax(opts);
+            return new ElasticSoftmax(opts);
         } else if (typeClf == 1) {
-            return new PolySoftmax(opts);
+            return new MaxLinSoftmax(opts);
         } else if (typeClf == 2) {
-            return new MinSoftmax(opts);
+            return new MinElasticSoftmax(opts);
         } else if (typeClf == 3) {
-            return new MaxMinSoftmax(opts);
+            return new WarpedSoftmax(opts);
         } else if (typeClf == 4) {
-            return new MinMaxSoftmax(opts);
-        } else if (typeClf == 5) {
-            return new DTWSoftmax(opts);
-        } else if (typeClf == 6) {
-            return new SemiMaxSoftmax(opts);
+            return new SemiElasticSoftmax(opts);
         } else {
             Msg.error("Error! Unknown type of classifier: %d.", typeClf);
         }

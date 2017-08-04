@@ -1,0 +1,11 @@
+Classifiers
+
+* CLElasticProduct      elastic-product functions
+* CLMaxLinear           max-linear function
+* CLMinElasticProduct   min elastic-product functions
+* CLSemiElastic         elastic-product functions with rigid bias
+* CLWarpedProduct       warped-product functions
+
+// Logging
+* Log_CLElasticProduct  elastic-product + Logging
+* Log_CLMaxLinear       max-linear + Logging

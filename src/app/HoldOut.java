@@ -2,8 +2,9 @@ package app;
 
 import app.utils.Util;
 import classifier.Classifier;
-import classifier.LogMaxSoftmax;
-import classifier.MaxSoftmax;
+import classifier.ElasticSoftmax;
+import classifier.Log_ElasticSoftmax;
+import classifier.Status;
 import core.Options;
 import data.Dataset;
 import preprocess.Preprocessor;
@@ -20,20 +21,18 @@ public abstract class HoldOut {
 
     //### OPTIONS ##############################################################
 
-    static String dataset = "MedicalImages";
+    static String dataset = "Beef";
 
     //--- type of classifier
-    //  0 : elastic softmax
-    //  1 : polyhedral max softmax
-    //  2 : min elastic softmax
-    //  3 : max-min elastic softmax
-    //  4 : min-max elastic softmax
-    //  5 : DTW softmax
-    //  6 : semi-elastic
-    int typeClf = 0;
+    //  0 : elastic-product
+    //  1 : max-linear
+    //  2 : min elastic-product
+    //  3 : warped-product
+    //  4 : semi-elastic-product
+    int typeClf = 3;
     //--- options
-    String optPP = "-p0 0 -p1 0 -a 1 -b -0.1";
-    String optSM = "-p 20 -e 5 -A 4 -l 0.1 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 5000 -o 3";
+    String optPP = " -p0 0 -p1 0 -a 1 -b -0.1";
+    String optSM = "-p 5 -e 3 -A 4 -l 0.003 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 100 -o 3";
 
     // Time series
     //String optSM = "-p 20 -e 3 -A 4 -l 0.03 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 1000 -S 100 -o 3";
@@ -49,6 +48,33 @@ public abstract class HoldOut {
 
     //--- path to result directory
     String logpath = "./results/";
+
+
+    static void runWPSM(String[] args) {
+        double[] ela = {0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 5.0};
+        int numEla = ela.length;
+        double[] acc = new double[numEla];
+        int[] complexity = new int[numEla];
+        for (int i = 0; i < numEla; i++) {
+            double lr = 0.3;
+            int status = -1;
+            while (status < 0) {
+                lr /= 3.0;
+                HoldOutUCR sm = new HoldOutUCR();
+                sm.optSM = "-e " + ela[i] + " -l " + lr
+                        + " -A 4 -r 0.0 -m 0.9 -r1 0.9 -r 0 -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 5000 -o 3";
+                System.out.println("options: -e " + ela[i] + " -l " + lr);
+                double[] result = sm.apply();
+                status = (int) result[0];
+                acc[i] = 100.0 * result[2];
+                complexity[i] = (int) (result[3] * result[3] * result[4] * ela[i]);
+            }
+        }
+        System.out.println();
+        System.out.println("Results: ");
+        System.out.println("ACC " + dataset + " warped-product-0x0 " + Array.toString(acc, "%5.2f "));
+        System.out.println("COM " + dataset + " warped-product-0x0 " + Array.toString(complexity));
+    }
 
 
     static void test() {
@@ -75,7 +101,6 @@ public abstract class HoldOut {
         System.out.println("Results: ");
         System.out.println(dataset + " Polyhedral " + Array.toString(acc[1], "%5.2f "));
         System.out.println(dataset + " Elastic    " + Array.toString(acc[0], "%5.2f "));
-
     }
 
     public double[] apply() {
@@ -94,7 +119,7 @@ public abstract class HoldOut {
 
         // evaluate
         Classifier clf = Util.getClassifier(typeClf, optSM);
-        int status = clf.fit(train);
+        Status status = clf.fit(train);
 
         double accTrain = clf.score(train);
         double accTest = clf.score(test);
@@ -105,12 +130,12 @@ public abstract class HoldOut {
         // log
         if (0 < LOG && typeClf == 0) {
             Options opts = new Options(optSM);
-            LogMaxSoftmax logger = new LogMaxSoftmax((MaxSoftmax) clf, logpath, dataset, opts.getInt("-e"));
+            Log_ElasticSoftmax logger = new Log_ElasticSoftmax((ElasticSoftmax) clf, logpath, dataset, opts.getInt("-e"));
             logger.log(train, 0);
             logger.log(test, 1);
         }
 
-        return new double[]{status, accTrain, accTest};
+        return new double[]{status.state, accTrain, accTest, train.maxLength(), train.numLabels()};
     }
 
     abstract Dataset[] getData();

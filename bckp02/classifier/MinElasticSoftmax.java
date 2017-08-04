@@ -1,6 +1,6 @@
 package classifier;
 
-import core.MaxMinAlignment;
+import core.MinMaxAlignment;
 import core.Options;
 import data.Dataset;
 import data.Pattern;
@@ -13,7 +13,7 @@ import util.Rand;
 /**
  * Created by jain on 24/03/2017.
  */
-public class MaxMinSoftmax extends Classifier {
+public class MinElasticSoftmax extends Classifier {
 
     int m_numLabels;        // number of labels
     int m_numPartitions;    // number of partitions
@@ -23,7 +23,7 @@ public class MaxMinSoftmax extends Classifier {
     Rand m_random;
     Parameter m_params;
 
-    public MaxMinSoftmax(String opts) {
+    public MinElasticSoftmax(String opts) {
         m_random = Rand.getInstance();
         m_params = new Parameter(opts);
     }
@@ -57,7 +57,7 @@ public class MaxMinSoftmax extends Classifier {
     private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
-            a[j] = MaxMinAlignment.sim(x.sequence(), m_W[j]);
+            a[j] = MinMaxAlignment.sim(x.sequence(), m_W[j]);
         }
         return a;
     }
@@ -92,7 +92,7 @@ public class MaxMinSoftmax extends Classifier {
         // auxiliary variables
         double[][][][] M;     // first moment
         double[][][][] V;     // second moment
-        MaxMinAlignment[] A;  // alignment
+        MinMaxAlignment[] A;  // alignment
 
         // update method
         Update ssg;
@@ -107,12 +107,9 @@ public class MaxMinSoftmax extends Classifier {
             X = data.patterns();
             y = data.labels();
 
-            // set monitor
-            monitor = new Monitor(data);
-
             // set hyper-parameters
             type = m_params.A;
-            elasticity = m_params.e;
+            elasticity = (int)Math.max(1, m_params.e);
             numPartitions = m_numPartitions;
             eta = m_params.l;
             mu = m_params.m;
@@ -132,7 +129,7 @@ public class MaxMinSoftmax extends Classifier {
             if (type == Parameter.A_ADAM) {
                 V = new double[outUnits][numPartitions][inUnits][elasticity];
             }
-            A = new MaxMinAlignment[outUnits];
+            A = new MinMaxAlignment[outUnits];
 
             // initialize weights
             double sigma = Math.sqrt(inUnits);
@@ -140,6 +137,9 @@ public class MaxMinSoftmax extends Classifier {
 
             // set optimization technique
             setSSG();
+
+            // set monitor
+            monitor = new Monitor(data);
         }
 
         int fit() {
@@ -157,7 +157,7 @@ public class MaxMinSoftmax extends Classifier {
                     // compute activation
                     double[] a = new double[outUnits];
                     for (int j = 0; j < outUnits; j++) {
-                        A[j] = new MaxMinAlignment(xi, m_W[j]);
+                        A[j] = new MinMaxAlignment(xi, m_W[j]);
                         a[j] = A[j].sim();
                     }
 
@@ -165,7 +165,7 @@ public class MaxMinSoftmax extends Classifier {
                     double[] z = m_F.apply(a);
                     double[] delta = m_F.derivative(z, yi);
                     for (int j = 0; j < outUnits; j++) {
-                        int p = A[j].indexOfMax();
+                        int p = A[j].indexOfMin();
                         double[][] wj = m_W[j][p];
                         int[][] path = A[j].path();
                         int len = path.length;

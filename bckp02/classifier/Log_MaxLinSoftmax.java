@@ -13,14 +13,14 @@ import java.util.HashSet;
 /**
  * Created by jain on 04.05.17.
  */
-public class LogMaxSoftmax {
+public class Log_MaxLinSoftmax {
 
-    MaxSoftmax m_model;
+    MaxLinSoftmax m_model;
     String m_path;
     String m_data;
     String m_type;       // "0" = training set; "1" = test set
 
-    public LogMaxSoftmax(MaxSoftmax model, String path, String data, int elasticity) {
+    public Log_MaxLinSoftmax(MaxLinSoftmax model, String path, String data, int elasticity) {
         m_model = model;
         m_path = path;
         m_data = data + "_E" + elasticity;
@@ -28,7 +28,7 @@ public class LogMaxSoftmax {
 
     public void log(Dataset X, int type) {
 
-        m_type = type <= 0? "0" : "1";
+        m_type = type <= 0 ? "0" : "1";
         Func F = m_model.m_F;
         double[][][] W = m_model.m_W;
         int outUnits = m_model.m_numLabels;
@@ -44,15 +44,15 @@ public class LogMaxSoftmax {
         PathSet[] paths = new PathSet[outUnits];                    // used paths
         int[][] C = new int[numLabels][numLabels];                  // confusion matrix (true vs predicted)
 
-        for(int j = 0; j < outUnits; j++) {
+        for (int j = 0; j < outUnits; j++) {
             paths[j] = new PathSet();
         }
 
-        for(int i = 0; i < numX; i++) {
+        for (int i = 0; i < numX; i++) {
             double[] x = X.pattern(i);
             MaxAlignment[] A = new MaxAlignment[outUnits];
             double[] a = new double[outUnits];
-            for(int j = 0; j < outUnits; j++) {
+            for (int j = 0; j < outUnits; j++) {
                 A[j] = new MaxAlignment(x, W[j]);
                 a[j] = A[j].sim();
 
@@ -69,8 +69,8 @@ public class LogMaxSoftmax {
             System.arraycopy(x, 0, Z[i], 0, x.length);
             int yTrue = X.label(i);
             int yPred = F.predict(a);
-            Z[i][dim-2] = yTrue;
-            Z[i][dim-1] = yPred;
+            Z[i][dim - 2] = yTrue;
+            Z[i][dim - 1] = yPred;
             C[yTrue][yPred]++;
         }
         write(L);
@@ -94,7 +94,7 @@ public class LogMaxSoftmax {
     private void write(int[][][] L) {
         String filename = m_path + m_data + "_L" + m_type + ".txt";
         File file = new File(filename);
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete();
         }
         int outUnits = L.length;
@@ -103,7 +103,7 @@ public class LogMaxSoftmax {
         header[0] = L[0].length;
         String text = Array.toString(header) + "\n";
         Writer.append(text, filename);
-        for(int i = 0; i < outUnits; i++) {
+        for (int i = 0; i < outUnits; i++) {
             Writer.append(Array.toString(L[i]), filename);
         }
     }
@@ -111,10 +111,10 @@ public class LogMaxSoftmax {
     private void write(double[][] Z) {
         String filename = m_path + m_data + "_D" + m_type + ".txt";
         File file = new File(filename);
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete();
         }
-        for(double[] z : Z) {
+        for (double[] z : Z) {
             String str = Array.toString(z, "%7.4f ");
             Writer.append(str + "\n", filename);
         }
@@ -123,12 +123,12 @@ public class LogMaxSoftmax {
     private void write(PathSet[] paths) {
         String filename = m_path + m_data + "_P" + m_type + ".txt";
         File file = new File(filename);
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete();
         }
         int outUnits = paths.length;
-        for(int i = 0; i < outUnits; i++) {
-            for(Path p : paths[i]) {
+        for (int i = 0; i < outUnits; i++) {
+            for (Path p : paths[i]) {
                 String str = i + " " + p.toString() + "\n";
                 Writer.append(str, filename);
             }
@@ -176,5 +176,6 @@ public class LogMaxSoftmax {
         }
     }
 
-    class PathSet extends HashSet<Path> {}
+    class PathSet extends HashSet<Path> {
+    }
 }

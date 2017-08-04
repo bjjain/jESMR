@@ -1,6 +1,5 @@
 package classifier;
 
-import core.MaxAlignment;
 import core.Options;
 import data.Dataset;
 import data.Pattern;
@@ -13,17 +12,16 @@ import util.Rand;
 /**
  * Created by jain on 24/03/2017.
  */
-public class SemiMaxSoftmax extends Classifier {
+public class MaxLinSoftmax extends Classifier {
 
     int m_numLabels;        // number of labels
     double[][][] m_W;       // weights
-    double[] m_b;           // bias
     Func m_F;               // output function
 
     Rand m_random;
     Parameter m_params;
 
-    public SemiMaxSoftmax(String opts) {
+    public MaxLinSoftmax(String opts) {
         m_random = Rand.getInstance();
         m_params = new Parameter(opts);
     }
@@ -56,10 +54,25 @@ public class SemiMaxSoftmax extends Classifier {
     private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
-            a[j] = MaxAlignment.sim(x.sequence(), m_W[j]) + m_b[j];
+            double[] y = mult(m_W[j], x.sequence());
+            a[j] = Array.max(y);
         }
         return a;
     }
+
+    private double[] mult(double[][] W, double[] x) {
+        int e = W.length;
+        int d = x.length;
+        double[] y = new double[e];
+        for (int i = 0; i < e; i++) {
+            y[i] = 0;
+            for (int j = 0; j < d; j++) {
+                y[i] += W[i][j] * x[j];
+            }
+        }
+        return y;
+    }
+
 
     @FunctionalInterface
     interface Update {
@@ -90,8 +103,9 @@ public class SemiMaxSoftmax extends Classifier {
         // auxiliary variables
         double[][][] M;     // first moment
         double[][][] V;     // second moment
-        double[] a;         // activate
-        MaxAlignment[] A;      // alignment
+        double[][] a;       // activation
+        double[] max_a;     // max activation
+        int[] max_idx;      // index of max activation
 
         // update method
         Update ssg;
@@ -106,12 +120,9 @@ public class SemiMaxSoftmax extends Classifier {
             X = data.patterns();
             y = data.labels();
 
-            // set monitor
-            monitor = new Monitor(data);
-
             // set hyper-parameters
             type = m_params.A;
-            elasticity = m_params.e;
+            elasticity = (int)Math.max(1, m_params.e);
             eta = m_params.l;
             mu = m_params.m;
             lambda = m_params.r;
@@ -125,25 +136,27 @@ public class SemiMaxSoftmax extends Classifier {
 
             // set auxiliary variables
             if (type != Parameter.A_SGD) {
-                M = new double[outUnits][inUnits][elasticity];
+                M = new double[outUnits][elasticity][inUnits];
             }
             if (type == Parameter.A_ADAM) {
-                V = new double[outUnits][inUnits][elasticity];
+                V = new double[outUnits][elasticity][inUnits];
             }
-            a = new double[outUnits];
-            A = new MaxAlignment[outUnits];
+            a = new double[outUnits][elasticity];
+            max_a = new double[outUnits];
+            max_idx = new int[outUnits];
 
             // initialize weights
             double sigma = Math.sqrt(inUnits);
-            m_W = m_random.nextArray(outUnits, inUnits, elasticity, sigma);
-            m_b = m_random.nextArray(outUnits, sigma);
+            m_W = m_random.nextArray(outUnits, elasticity, inUnits, sigma);
 
             // set optimization technique
             setSSG();
+
+            // set monitor
+            monitor = new Monitor(data);
         }
 
         int fit() {
-
             int T = m_params.T;
             int S = 0;
             for (int t = 1; t <= T && S == 0; t++) {
@@ -154,34 +167,33 @@ public class SemiMaxSoftmax extends Classifier {
                     double[] xi = X[f[i]];
                     int yi = y[f[i]];
 
-                    // compute activate
-                    for (int j = 0; j < outUnits; j++) {
-                        A[j] = new MaxAlignment(xi, m_W[j]);
-                        a[j] = A[j].sim() + m_b[j];
-                    }
-
                     // update
-                    double[] z = m_F.apply(a);
-                    double[] delta = m_F.derivative(z, yi);
-                    for (int j = 0; j < outUnits; j++) {
-                        m_b[j] -= eta * delta[j];
-                        double[][] wj = m_W[j];
-                        int[][] path = A[j].path();
-                        int len = path.length;
-                        int r, s;
-                        for (int l = 0; l < len; l++) {
-                            r = path[l][0]; // max_idx of input x
-                            s = path[l][1]; // max_idx of elasticity
-                            double grad = delta[j] * xi[r] + lambda * wj[r][s];
-                            wj[r][s] -= ssg.apply(grad, j, r, s);
-                        }
-                    }
+                    update(xi, yi);
                 }
                 S = monitor.check(t);
                 monitor.info(t);
             }
             m_W = monitor.optWeights();
             return S;
+        }
+
+        private void update(double[] x, int y) {
+            for (int j = 0; j < outUnits; j++) {
+                a[j] = mult(m_W[j], x);
+                max_idx[j] = Array.indexOfMax(a[j]);
+                max_a[j] = a[j][max_idx[j]];
+            }
+            double[] z = m_F.apply(max_a);
+            double[] delta = m_F.derivative(z, y);
+
+            for (int j = 0; j < outUnits; j++) {
+                double[][] wj = m_W[j];
+                int e = max_idx[j];
+                for (int d = 0; d < inUnits; d++) {
+                    double grad = delta[j] * x[d] + lambda * wj[e][d];
+                    wj[e][d] -= ssg.apply(grad, j, e, d);
+                }
+            }
         }
 
 
