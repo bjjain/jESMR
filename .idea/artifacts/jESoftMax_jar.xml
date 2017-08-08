@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="jESoftMax:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/jESoftMax_jar</output-path>
+    <root id="archive" name="jESoftMax.jar">
+      <element id="module-output" name="jESoftMax" />
+      <element id="library" level="project" name="jDCNN" />
+    </root>
+  </artifact>
+</component>

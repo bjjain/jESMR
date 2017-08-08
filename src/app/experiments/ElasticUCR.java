@@ -1,8 +1,8 @@
 package app.experiments;
 
 import classifier.Classifier;
+import classifier.ElasticSoftmax;
 import classifier.Status;
-import classifier.WarpedSoftmax;
 import core.Options;
 import data.ClassLabels;
 import data.Dataset;
@@ -14,19 +14,19 @@ import util.Reader;
 
 import java.io.File;
 
-public class WarpedUCR {
+public class ElasticUCR {
 
 
     //### OPTIONS ##############################################################
 
     //--- name of ucr dataset
-    String ucr = "ItalyPowerDemand";
+    String ucr = "DistalPhalanxOutlineAgeGroup";
 
     //--- path to directory
     String path = "/Users/jain/_Data/timeseries/ucr/";
 
     //--- options
-    String optPP = " -zc 0 -zr 1 -p0 1 -p1 1 -a 1 -b -0.1 ";
+    String optPP = " -zc 0 -zr 1 -p0 0 -p1 0 -a 1 -b -0.1 ";
     String optSM1 = " -e 5 -A 4 -l 0.00001 -r 0.0 ";
     String optSM2 = " -m 0.9 -r1 0.9 -r2 0.999 -T 5000 -S 250 -o 3 ";
 
@@ -40,23 +40,22 @@ public class WarpedUCR {
 
     // simple test run
     static void test() {
-        WarpedUCR sm = new WarpedUCR();
+        ElasticUCR sm = new ElasticUCR();
         sm.apply();
     }
 
     static void experiment(String[] args) {
 
-        //double[] ela = {0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 5.0};
-        double[] ela = {5.0};
+        double[] ela = {1, 2, 3, 4, 5, 7, 10, 15, 20};
         int numEla = ela.length;
-        Log log = new Log("warped-product", numEla);
+        Log log = new Log("elastic-product", numEla);
         for (int i = 0; i < numEla; i++) {
             int t = 1;
             boolean decrLR = true;
             while (decrLR) {
                 int e = 1 + t / 2;
                 double lr = t % 2 == 1 ? Math.pow(10, -e) : 3.0 * Math.pow(10, -e);
-                WarpedUCR sm = new WarpedUCR();
+                ElasticUCR sm = new ElasticUCR();
                 sm.optSM1 = " -e " + ela[i] + " -l " + lr + " -r 0.0 ";
                 System.out.println(sm.optSM1);
                 log.setPointer(i);
@@ -85,7 +84,7 @@ public class WarpedUCR {
         test = pre.apply(test);
 
         // evaluate
-        Classifier clf = new WarpedSoftmax(optSM1 + optSM2);
+        Classifier clf = new ElasticSoftmax(optSM1 + optSM2);
         Status status = clf.fit(train);
 
         double accTrain = clf.score(train);
@@ -123,7 +122,7 @@ public class WarpedUCR {
         test = pre.apply(test);
 
         // evaluate
-        Classifier clf = new WarpedSoftmax(optSM1 + optSM2);
+        Classifier clf = new ElasticSoftmax(optSM1 + optSM2);
         clf.fit(train);
 
         double accTrain = clf.score(train);

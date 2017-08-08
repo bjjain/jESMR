@@ -38,15 +38,11 @@ public class WarpedSoftmax extends Classifier {
     }
 
     public int predict(Pattern x) {
-        return m_F.predict(activate(x));
-    }
-
-    private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
             a[j] = Alignment.sim(x.sequence(), m_W[j]);
         }
-        return a;
+        return m_F.predict(a);
     }
 
     @FunctionalInterface
@@ -175,7 +171,9 @@ public class WarpedSoftmax extends Classifier {
             }
             m_W = optW;
             if (m_status.decrLearningRate()) {
+                System.out.flush();
                 Msg.warn("Warning! Decrease learning rate.");
+                System.err.flush();
             }
         }
 

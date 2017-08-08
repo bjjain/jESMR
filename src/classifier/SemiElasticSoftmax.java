@@ -39,16 +39,13 @@ public class SemiElasticSoftmax extends Classifier {
     }
 
     public int predict(Pattern x) {
-        return m_F.predict(activate(x));
-    }
-
-    private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
             a[j] = MaxAlignment.sim(x.sequence(), m_W[j]) + m_b[j];
         }
-        return a;
+        return m_F.predict(a);
     }
+
 
     @FunctionalInterface
     interface Update {

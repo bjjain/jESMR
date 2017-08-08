@@ -2,12 +2,13 @@ package classifier;
 
 public class Status {
 
-    public static final int LOSS_NAN = -2;   // loss is not a number
-    public static final int LOSS_OSC = -1;   // loss oscillates
-    public static final int LOSS_DECR = 0;   // loss decreases
-    public static final int LOSS_CONV = 1;   // loss has converged
-    // tracking period
-    static final int trPeriod = 30;
+    public static final int LOSS_NAN = -2;      // loss is not a number
+    public static final int LOSS_OSC = -1;      // loss oscillates
+    public static final int LOSS_DECR = 0;      // loss decreases
+    public static final int LOSS_CONV = 1;      // loss has converged
+
+    static final int TRPER = 30;                // tracking period
+
     // state
     public int state;
     // best results
@@ -26,15 +27,31 @@ public class Status {
     Status(int maxStable) {
         this.maxStable = maxStable;
         this.minLoss = Double.POSITIVE_INFINITY;
-        trAcc = new double[trPeriod];
-        trLoss = new double[trPeriod];
+        trAcc = new double[TRPER];
+        trLoss = new double[TRPER];
+    }
+
+    public double meanOscillations() {
+        double avg = 0;
+        for (int i = 1; i < TRPER; i++) {
+            avg += Math.abs(trAcc[i - 1] - trAcc[i]);
+        }
+        return avg / ((double) TRPER);
+    }
+
+    public double meanDifferences() {
+        double avg = 0;
+        for (int i = 0; i < TRPER; i++) {
+            avg += Math.abs(maxAcc - trAcc[i]);
+        }
+        return avg / ((double) TRPER);
     }
 
     int set(double acc, double loss, int t) {
         updateModel = false;
         trAcc[trNext] = acc;
         trLoss[trNext] = loss;
-        trNext = (trNext + 1) % trPeriod;
+        trNext = (trNext + 1) % TRPER;
         if (!Double.isFinite(loss)) {
             state = LOSS_NAN;
             return state;
@@ -61,15 +78,14 @@ public class Status {
         return state;
     }
 
-    boolean decrLearningRate() {
+    public boolean decrLearningRate() {
         return state < 0;
     }
 
     void info(int t) {
-        int i = trNext == 0 ? trPeriod - 1 : trNext - 1;
+        int i = trNext == 0 ? TRPER - 1 : trNext - 1;
         String s = "[ESMR] %5d  loss = %7.5f (%7.5f)  train = %1.3f (%1.3f)%n";
         System.out.printf(s, t, trLoss[i], minLoss, trAcc[i], maxAcc);
-
     }
 
 }

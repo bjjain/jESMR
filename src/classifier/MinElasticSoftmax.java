@@ -39,15 +39,11 @@ public class MinElasticSoftmax extends Classifier {
     }
 
     public int predict(Pattern x) {
-        return m_F.predict(activate(x));
-    }
-
-    private double[] activate(Pattern x) {
         double[] a = new double[m_numLabels];
         for (int j = 0; j < m_numLabels; j++) {
             a[j] = MinMaxAlignment.sim(x.sequence(), m_W[j]);
         }
-        return a;
+        return m_F.predict(a);
     }
 
     @FunctionalInterface
@@ -81,6 +77,7 @@ public class MinElasticSoftmax extends Classifier {
         double[][][][] M;     // first moment
         double[][][][] V;     // second moment
         MinMaxAlignment[] A;  // alignment
+        double[] a;           // activate
 
         // update method
         Update ssg;
@@ -114,6 +111,7 @@ public class MinElasticSoftmax extends Classifier {
             if (type == Parameter.A_ADAM) {
                 V = new double[outUnits][numPartitions][inUnits][elasticity];
             }
+            a = new double[outUnits];
             A = new MinMaxAlignment[outUnits];
 
             // initialize weights
@@ -140,7 +138,6 @@ public class MinElasticSoftmax extends Classifier {
                     int yi = y[f[i]];
 
                     // compute activation
-                    double[] a = new double[outUnits];
                     for (int j = 0; j < outUnits; j++) {
                         A[j] = new MinMaxAlignment(xi, m_W[j]);
                         a[j] = A[j].sim();
@@ -186,7 +183,6 @@ public class MinElasticSoftmax extends Classifier {
         private double[] eval() {
             double acc = 0;
             double loss = 0;
-            double[] a = new double[m_numLabels];
             for (int i = 0; i < numX; i++) {
                 for (int j = 0; j < m_numLabels; j++) {
                     a[j] = MinMaxAlignment.sim(X[i], m_W[j]);
