@@ -2,9 +2,6 @@ package transform;
 
 import data.Pattern;
 
-/**
- * Augments time series with bias at first position.
- */
 public class Augment extends Transform {
 
     double bias;

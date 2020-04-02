@@ -5,9 +5,6 @@ import data.Pattern;
 import util.Msg;
 import util.Options;
 
-/**
- * Created by jain on 19.06.17.
- */
 public abstract class Classifier {
 
     public static final double EPS = 10E-15;

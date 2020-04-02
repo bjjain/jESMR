@@ -1,5 +1,7 @@
 package esmr.regularizer;
-
+/**
+ * Dummy class for no regularization
+ */
 public class Zero implements Regularizer {
 
     @Override

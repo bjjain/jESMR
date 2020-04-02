@@ -7,55 +7,29 @@ import java.util.Set;
 
 /**
  * Implements an option handler. An option is a flag-value pair of the form:
- * <p>
- * <pre>
  *     -flag value
- * </pre>
- * where flag is an alphanumeric string and value is of type integer, double
- * or String.
- * <p>
- * Examples of String representations of option:
- * <ul>
- * <li> <code>"-l 0.5"</code>
- * <li> <code>"-S 2 -l 0.5"</code>
- * </ul>
+ * where flag is an alphanumeric string and value is of type integer, double, or String.
  *
- * @author jain
+ * Examples of String representations of option:
+ *      - "-l 0.5"
+ *      - "-S 2 -l 0.5"
  */
 @SuppressWarnings("serial")
 public class Options extends HashMap<String, String> {
 
-    /**
-     * Creates empty list of options.
-     */
     public Options() {
         super();
     }
 
-    /**
-     * Returns Alignment of <code>Options</code> specified by <code>opts</code>.
-     *
-     * @param opts list of options
-     */
     public Options(String opts) {
         super();
         parse(opts);
     }
 
-    /**
-     * Adds options specified by <code>opts</code>
-     *
-     * @param opts list of options
-     */
     public void add(String opts) {
         parse(opts);
     }
 
-    /**
-     * Returns all flags of this collection.
-     *
-     * @return array of flags
-     */
     private String[] getFlags() {
         String[] flags = new String[size()];
         Set<String> keys = keySet();
@@ -67,51 +41,20 @@ public class Options extends HashMap<String, String> {
         return flags;
     }
 
-    /**
-     * Returns integer value associated with <code>flag</code>. Before
-     * calling this method, test existence of <code>flag</code> using method
-     * <code>containsKey(String)</code>. An exception will be thrown if the
-     * associated value is not a number. Double values are converted to
-     * integers.
-     *
-     * @param flag
-     * @return associated integer value
-     */
     public int getInt(String flag) {
         String val = get(flag);
         return (int) Double.parseDouble(val);
     }
 
-    /**
-     * Returns double value associated with <code>flag</code>. Before
-     * calling this method, test existence of <code>flag</code> using method
-     * <code>containsKey(String)</code>. An exception will be thrown if the
-     * associated value is not a number.
-     *
-     * @param flag
-     * @return associated double value
-     */
     public double getDouble(String flag) {
         String val = get(flag);
         return Double.parseDouble(val);
     }
 
-    /**
-     * Returns String value associated with <code>flag</code>. Before
-     * calling this method, test existence of <code>flag</code> using method
-     * <code>containsKey(String)</code>.
-     *
-     * @param flag
-     * @return associated String value
-     */
     public String getString(String flag) {
         return get(flag);
     }
 
-    /**
-     * Returns a string representation of this collection.
-     */
-    @Override
     public String toString() {
         String[] keys = getFlags();
         StringBuilder sb = new StringBuilder();

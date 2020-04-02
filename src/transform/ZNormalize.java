@@ -2,10 +2,9 @@ package transform;
 
 import data.Pattern;
 
-/**
- * Z-Standardization.
- */
 public class ZNormalize extends Transform {
+
+    static final double EPS = 10E-10;
 
     @Override
     Pattern transform(Pattern p) {

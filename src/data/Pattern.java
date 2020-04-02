@@ -13,6 +13,4 @@ public class Pattern {
     public int length() {
         return x.length;
     }
-
-
 }

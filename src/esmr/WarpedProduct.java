@@ -5,7 +5,6 @@ public final class WarpedProduct {
     private int[][] m_path;
     private double m_prod;
 
-
     public WarpedProduct(double[][] w, double[] x) {
         warp(w, x);
     }

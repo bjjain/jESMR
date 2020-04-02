@@ -14,8 +14,8 @@ public class Dataset extends ArrayList<Pattern> {
     }
 
     /*
-     * Converts data-matrix into data set of labeled time series. Every row starts with a class label followed by a
-     * time series.
+     * Converts data-matrix into data set of labeled time series. Every row of the matrix starts with a class label
+     * followed by a time series.
      */
     public Dataset(double[][] data) {
         for (double[] x : data) {

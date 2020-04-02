@@ -2,7 +2,7 @@ package esmr;
 
 import java.util.Arrays;
 
-public class Log {
+public class Monitor {
 
     private static final int NUM_ERRS = 2;
 
@@ -15,7 +15,7 @@ public class Log {
     boolean[] hasImproved;
     int verbosity;
 
-    Log(int maxEpochs, int maxStable, int verbosity) {
+    Monitor(int maxEpochs, int maxStable, int verbosity) {
         this.maxEpochs = maxEpochs;
         this.maxStable = maxStable;
         this.verbosity = verbosity;

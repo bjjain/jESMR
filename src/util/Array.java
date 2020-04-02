@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 public final class Array {
 
-    private Array() {
-    }
+    private Array() { }
 
     public static double[] cp(double[] x) {
         if (x == null) {

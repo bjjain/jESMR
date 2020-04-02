@@ -1,6 +1,8 @@
 package esmr.regularizer;
 
-
+/**
+ * L2 Regularization
+ */
 public class L2 implements Regularizer {
 
     double[][] m_w;

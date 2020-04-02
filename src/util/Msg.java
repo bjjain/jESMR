@@ -21,5 +21,4 @@ public class Msg {
         System.out.println();
         System.out.flush();
     }
-
 }

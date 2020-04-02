@@ -1,19 +1,11 @@
 package util;
 
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-
-/**
- * This class implements methods for reading delimiter separated values (DSV) and returns a double[][] array.
- *
- * @author jain
- */
 public class Reader {
-
 
     /**
      * Reads delimiter separated values of the specified file. The regular expression regexp specifies the delimiter.
@@ -61,7 +53,6 @@ public class Reader {
         return load(filename, ",");
     }
 
-
     private static double[][] transform(ArrayList<double[]> X) {
         int n = X.size();
         double[][] data = new double[n][];
@@ -84,7 +75,6 @@ public class Reader {
         return data;
     }
 
-
     private static double[] toDouble(String[] vals) {
         int n = vals.length;
         double[] x = new double[n];
@@ -100,7 +90,6 @@ public class Reader {
         }
         return x;
     }
-
 
     private static void finalize(BufferedReader br) {
         if (br != null) {

@@ -81,9 +81,9 @@ public class MLSR extends Classifier {
         double[][][] optW = Array.cp(W);                  // optimal weights
 
         // logger
-        Log log = new Log(params.T, params.S, params.o);
+        Monitor monitor = new Monitor(params.T, params.S, params.o);
 
-        for (int t = 1; t <= T && log.proceed(); t++) {
+        for (int t = 1; t <= T && monitor.proceed(); t++) {
             int[] f = rand.shuffle(N);
             for (int i = 0; i < N; i++) {
 
@@ -120,13 +120,13 @@ public class MLSR extends Classifier {
             }
 
             // check convergence
-            log.log(new double[]{loss(z), 100 * eval(X)}, t);
-            if (log.hasImproved[1]) {
+            monitor.log(new double[]{loss(z), 100 * eval(X)}, t);
+            if (monitor.hasImproved[1]) {
                 optW = Array.cp(W);
             }
 
             // decrease learning rate if necessary
-            if (log.decreaseLearningRate(t)) {
+            if (monitor.decreaseLearningRate(t)) {
                 t = 0;
                 eta /= 2.0;
                 W = rand.nextArray(c, m, n, Math.sqrt(n));

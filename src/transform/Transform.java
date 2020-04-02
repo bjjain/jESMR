@@ -5,8 +5,6 @@ import data.Pattern;
 
 public abstract class Transform {
 
-    static final double EPS = 10E-10;
-
     public Dataset transform(Dataset X) {
         Dataset T = new Dataset();
         for (Pattern p : X) {

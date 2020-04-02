@@ -8,7 +8,7 @@ import util.Options;
 import util.Rand;
 
 /**
- * Warped Softmax Regression.
+ * Warped Softmax Regression
  */
 public class WSR extends Classifier {
 
@@ -86,10 +86,10 @@ public class WSR extends Classifier {
         double[][][] optW = Array.cp(W);
 
         // logger
-        Log log = new Log(params.T, params.S, params.o);
+        Monitor monitor = new Monitor(params.T, params.S, params.o);
 
         // learn
-        for (int t = 1; t <= T && log.proceed(); t++) {
+        for (int t = 1; t <= T && monitor.proceed(); t++) {
 
             int[] f = rand.shuffle(n);
             for (int next = 0; next < n; next++) {
@@ -131,13 +131,13 @@ public class WSR extends Classifier {
             }
 
             // check convergence
-            log.log(new double[]{loss(out), 100 * eval(X)}, t);
-            if (log.hasImproved[1]) {
+            monitor.log(new double[]{loss(out), 100 * eval(X)}, t);
+            if (monitor.hasImproved[1]) {
                 optW = Array.cp(W);
             }
 
             // decrease learning rate if necessary
-            if (log.decreaseLearningRate(t)) {
+            if (monitor.decreaseLearningRate(t)) {
                 t = 0;
                 eta /= 2.0;
                 W = rand.nextArray(d0, d1, d2, Math.sqrt(d2));

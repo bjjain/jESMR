@@ -10,11 +10,9 @@ public class Rand extends Random {
     private Rand() {
         super();
     }
-
     private Rand(int seed) {
         super(seed);
     }
-
     public static Rand getInstance() {
         return RND;
     }

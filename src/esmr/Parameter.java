@@ -147,9 +147,8 @@ class Parameter {
                 + "-S    <int>    : max number of stable epochs (default " + S + ")%n"
                 + "-o    <int>    : output mode (default " + o + ")%n"
                 + "         0 -- quiet mode %n"
-                + "         1 -- dots %n"
-                + "         2 -- progress info after each epoch %n"
-                + "         3 -- writes progress to file %n";
+                + "         1 -- current number of epochs %n"
+                + "         2 -- progress info after each epoch %n";
         System.out.flush();
         Msg.error(String.format(OPTS, flag, value));
         System.err.print(String.format(OPTS, flag, value));
