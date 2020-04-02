@@ -1,49 +1,39 @@
 package util;
 
-import data.ClassLabels;
-import data.Dataset;
-import data.Pattern;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
+
 
 /**
- * Parses time series data. Each line of the data file must have
- * the following format:
- * <p>
- * <pre>
- *    y x_1 x_2 ... x_n
- * </pre>
- * The first entry is an integer representing a class label. The following entries are real-valued elements of a time
- * series. All entries must be separated by a space.
+ * This class implements methods for reading delimiter separated values (DSV) and returns a double[][] array.
  *
  * @author jain
  */
 public class Reader {
 
-    /**
-     * Returns a list of labeled time series contained in the specified file. Every row represents a time series. Values
-     * are separated by the specified regular expression. If the boolean variable labelsFirst is true, then the first
-     * element of every row is interpreted as class label. Otherwise the last element of a row is interpreted as label.
-     * The labels are transformed to the interval [0, k-1], where k is the number of labels. Labels are sorted in the
-     * order of appearance. To keep track of the labels, a ClassLabel object cl must be passed. The object cl can be
-     * null or empty if this method is called for the first time for a given problem.
-     *
-     * @param file        name of file
-     * @param regexp      delimiter
-     * @param labelsFirst true if labels come first
-     * @return list of labeled time series
-     */
-    public static Dataset load(String file, ClassLabels cl, String regexp, boolean labelsFirst) {
-        BufferedReader br = null;
-        String line = "";
 
-        ArrayList<Pattern> X = new ArrayList<>();
-        if (cl == null) {
-            cl = new ClassLabels();
-        }
+    /**
+     * Reads delimiter separated values of the specified file. The regular expression regexp specifies the delimiter.
+     * The method returns a double[][] array, where each line of the file corresponds to a row of the matrix.
+     * <p>
+     * Common examples of delimiters:
+     * <p>
+     * "\\s+"  spaces
+     * ","     comma
+     * ";"     semicolon
+     *
+     * @param file   name of file
+     * @param regexp delimiter
+     * @return double[][] array of values
+     */
+    public static double[][] load(String file, String regexp) {
+        BufferedReader br = null;
+        String line;
+
+        ArrayList<double[]> X = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(file));
             while ((line = br.readLine()) != null) {
@@ -52,58 +42,73 @@ public class Reader {
                     continue;
                 }
                 String[] row = line.split(regexp);
-                int posLabel = labelsFirst ? 0 : row.length - 1;
-                double[] x;
-                if (labelsFirst) {
-                    x = getFeatures_lf(row);
-                } else {
-                    x = getFeatures_ll(row);
-                }
-                String label = row[posLabel];
-                cl.putIfAbsent(label, cl.size());
-                X.add(new Pattern(x, cl.get(label)));
+                double[] x = toDouble(row);
+                X.add(x);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            finalize(br);
+        }
+        return transform(X);
+    }
+
+    public static double[][] loadSSV(String filename) {
+        return load(filename, "\\s+");
+    }
+
+    public static double[][] loadCSV(String filename) {
+        return load(filename, ",");
+    }
+
+
+    private static double[][] transform(ArrayList<double[]> X) {
+        int n = X.size();
+        double[][] data = new double[n][];
+        HashSet<Integer> labels = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            data[i] = X.get(i);
+            labels.add((int) data[i][0]);
+        }
+        // relabel
+        List<Integer> sortedLabels = new ArrayList<>(labels);
+        Collections.sort(sortedLabels);
+        int numLabels = sortedLabels.size();
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < numLabels; i++) {
+            map.put(sortedLabels.get(i), i);
+        }
+        for (int i = 0; i < n; i++) {
+            data[i][0] = map.get((int) data[i][0]);
+        }
+        return data;
+    }
+
+
+    private static double[] toDouble(String[] vals) {
+        int n = vals.length;
+        double[] x = new double[n];
+        int countDoubles = 0;
+        for (int i = 0; i < n; i++) {
+            x[i] = Double.valueOf(vals[i]);
+            if (!Double.isNaN(x[i])) {
+                countDoubles++;
             }
         }
-        return new Dataset(X, cl.size());
-    }
-
-    /**
-     * Returns a list of labeled time series contained in the specified file. The first element of each line is a class
-     * label. Values within a line are spearated by blank spaces. This format is used for loading datasets in the format
-     * of the TestLVQ time series datasets.
-     *
-     * @param filename name of file
-     * @return list of labeled time series
-     */
-    public static Dataset load(String filename, ClassLabels cl) {
-        return load(filename, cl, "\\s+", true);
-    }
-
-    private static double[] getFeatures_lf(String[] row) {
-        int n = row.length;
-        double[] x = new double[n - 1];
-        for (int i = 1; i < n; i++) {
-            x[i - 1] = Double.valueOf(row[i]);
+        if (countDoubles < n) {
+            x = Arrays.copyOfRange(x, 0, countDoubles);
         }
         return x;
     }
 
-    private static double[] getFeatures_ll(String[] row) {
-        int n = row.length - 1;
-        double[] x = new double[n];
-        for (int i = 0; i < n; i++) {
-            x[i] = Double.valueOf(row[i]);
+
+    private static void finalize(BufferedReader br) {
+        if (br != null) {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return x;
     }
 }

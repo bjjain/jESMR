@@ -1,4 +1,4 @@
-package core;
+package util;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,22 +33,13 @@ public class Options extends HashMap<String, String> {
     }
 
     /**
-     * Returns instance of <code>Options</code> specified by <code>opts</code>.
+     * Returns Alignment of <code>Options</code> specified by <code>opts</code>.
      *
      * @param opts list of options
      */
     public Options(String opts) {
         super();
         parse(opts);
-    }
-
-    public static void main(String[] args) {
-        String o = "-S 4 -P 3 -p 0 -o 0 -t 100 -T 500 -l 0.1  -P 0 -k 1";
-        Options opts = new Options(o);
-        System.out.println(opts.toString());
-        opts.remove("-k");
-        opts.remove("-m");
-        System.out.println(opts.toString());
     }
 
     /**
@@ -138,13 +129,13 @@ public class Options extends HashMap<String, String> {
         while (sc.hasNext()) {
             String flag = sc.next();
             if ((flag.length() <= 1) || !flag.startsWith("-")) {
-                exit("Invalid flag format for option: %sim", flag);
+                exit("Invalid flag format for option: %score", flag);
             }
             if (sc.hasNext()) {
                 String val = sc.next();
                 put(flag, val);
             } else {
-                exit("Missing value for option %sim.", flag);
+                exit("Missing value for option %score.", flag);
             }
         }
         sc.close();

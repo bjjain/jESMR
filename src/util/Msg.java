@@ -7,18 +7,19 @@ public class Msg {
 
     public static final void error(String msg, Object... args) {
         System.out.flush();
-        System.err.println();
-        System.err.printf(msg, args);
-        System.err.println();
-        System.err.flush();
+        System.out.println();
+        System.out.printf(msg, args);
+        System.out.println();
+        System.out.flush();
         throw new RuntimeException();
     }
 
     public static final void warn(String msg, Object... args) {
         System.out.flush();
-        System.err.println();
-        System.err.println(String.format(msg, args));
-        System.err.flush();
+        System.out.println();
+        System.out.println(String.format(msg, args));
+        System.out.println();
+        System.out.flush();
     }
 
 }

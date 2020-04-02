@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="69328ea0-6396-447c-9bc5-8b7c1d195f48" name="Default Changelist" comment="majore revision">
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasets/Beef/Beef_TEST.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasets/Beef/Beef_TRAIN.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasets/Coffee/Coffee_TEST.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasets/Coffee/Coffee_TRAIN.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jESMR.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/META-INF/jESMR.kotlin_module" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/app/Test.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/data/Dataset.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/data/Pattern.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/Classifier.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/Log.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/MLSR.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/Parameter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/WSR.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/WarpedProduct.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/regularizer/L1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/regularizer/L2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/regularizer/Regularizer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/esmr/regularizer/Zero.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/transform/Augment.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/transform/Transform.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/transform/ZNormalize.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/util/Array.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/util/Msg.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/util/Options.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/util/Rand.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/jESMR/util/Reader.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/readme.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/Test.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/Classifier.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/Log.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/MLSR.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/Parameter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/WSR.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/WarpedProduct.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/regularizer/L1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/regularizer/L2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/regularizer/Regularizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/esmr/regularizer/Zero.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/transform/Augment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/transform/Transform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/transform/ZNormalize.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/jESoftMax_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/App2D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/AppDimRed.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/AppNormalization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/AppSoftMax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/Softmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp01/Softmax02.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppCV_UCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppCV_UCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppMNIST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppNN_UCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppSITS1M.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppUCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppUCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/app/AppVisual.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/@Description" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/Classifier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/ElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/Log_ElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/Log_MaxLinSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/MaxLinSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/MinElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/Parameter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/SemiElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/Status.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bckp02/classifier/WarpedSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/HoldOut.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/HoldOutMNIST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/HoldOutUCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/HoldOutUCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Synthetic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/Vis2D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/ElasticUCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/ElasticUCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/Log.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/MaxLinUCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/MaxLinUCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/WarpedUCI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/experiments/WarpedUCR.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/utils/LogResults.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/utils/Util.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/@Description" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/Classifier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/ElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/Log_ElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/Log_MaxLinSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/MaxLinSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/MinElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/Parameter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/SemiElasticSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/Status.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/WarpedSoftmax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/lvq/GLVQ.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Alignment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/MaxAlignment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/MinMaxAlignment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/Options.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Options.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Augmentor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/ClassLabels.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Dataset.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Dataset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Pattern.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Pattern.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Standardization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dimred/DimRed.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/functions/Func.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/functions/FuncLogistic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/functions/FuncSoftMax.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mean/DTW.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mean/Mean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mean/NearestNeighbor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mean/Normalization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/preprocess/Parameter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/preprocess/Preprocessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Array.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Array.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Msg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Msg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Rand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Rand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Reader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Reader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Writer.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1ZyxzDbfcW31lMZHSg5XcwHkzQ9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="app.Test" />
+      <module name="jESMR" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="69328ea0-6396-447c-9bc5-8b7c1d195f48" name="Default Changelist" comment="" />
+      <created>1585825394530</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585825394530</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="majore revision" />
+    <option name="LAST_COMMIT_MESSAGE" value="majore revision" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="585" y="369" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1585836261485">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="585" y="369" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1680.963@0.23.1680.963" timestamp="1585836261485" />
+    <state x="462" y="109" key="CommitChangelistDialog2" timestamp="1585840752396">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="462" y="109" key="CommitChangelistDialog2/0.23.1680.963@0.23.1680.963" timestamp="1585840752396" />
+    <state width="1638" height="259" key="GridCell.Tab.0.bottom" timestamp="1585840752432">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="259" key="GridCell.Tab.0.bottom/0.23.1680.963@0.23.1680.963" timestamp="1585840752432" />
+    <state width="1638" height="259" key="GridCell.Tab.0.center" timestamp="1585840752432">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="259" key="GridCell.Tab.0.center/0.23.1680.963@0.23.1680.963" timestamp="1585840752432" />
+    <state width="1638" height="259" key="GridCell.Tab.0.left" timestamp="1585840752431">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="259" key="GridCell.Tab.0.left/0.23.1680.963@0.23.1680.963" timestamp="1585840752431" />
+    <state width="1638" height="259" key="GridCell.Tab.0.right" timestamp="1585840752432">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="259" key="GridCell.Tab.0.right/0.23.1680.963@0.23.1680.963" timestamp="1585840752432" />
+    <state x="328" y="87" key="SettingsEditor" timestamp="1585839942633">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="328" y="87" key="SettingsEditor/0.23.1680.963@0.23.1680.963" timestamp="1585839942633" />
+    <state x="640" y="247" key="VcsDiffUtil.ChangesDialog" timestamp="1585840432024">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="640" y="247" key="VcsDiffUtil.ChangesDialog/0.23.1680.963@0.23.1680.963" timestamp="1585840432024" />
+    <state x="100" y="123" width="1480" height="763" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1585840467840">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="100" y="123" width="1480" height="763" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.23.1680.963@0.23.1680.963" timestamp="1585840467840" />
+    <state x="494" y="339" key="com.intellij.ide.util.TipDialog" timestamp="1585825397892">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="494" y="339" key="com.intellij.ide.util.TipDialog/0.23.1680.963@0.23.1680.963" timestamp="1585825397892" />
+  </component>
+</project>
