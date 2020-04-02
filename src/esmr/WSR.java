@@ -1,8 +1,8 @@
 package esmr;
 
-import esmr.regularizer.Regularizer;
 import data.Dataset;
 import data.Pattern;
+import esmr.regularizer.Regularizer;
 import util.Array;
 import util.Options;
 import util.Rand;
