@@ -50,7 +50,7 @@ import util.Reader;
  */
 public class Test {
 
-    String dir = "./datasets/";
+    String dir = "./ucr/";
     String data = "Coffee";
     int typeClf = 0;
     String opts = " -e 5 -l 0.4 -R 0 -r 0.01 -b1 0.9 -b2 0.99 -T 5000 -S 250 -o 2 ";
