@@ -14,39 +14,39 @@ import util.Reader;
 /**
  * This class is the entry point for running warped and max-linear softmax regression for UCR datasets of the following
  * format:
- * - one time series per row
- * - first value of a row is the class label
- * - second to last value of a row are the elements of the time series
- * - values are separated by a comma
+ *      - one time series per row
+ *      - first value of a row is the class label
+ *      - second to last value of a row are the elements of the time series
+ *      - values are separated by a comma
  * The directory ./datasets/ includes two example datasets from the UCR repository (Beef, Coffee).
  *
  * NOTE:
- * 1. Time series need to be augmented for including the bias term. For this, method apply() calls the method
- * augment().
- * 2. Learning rate is selected automatically.
+ *      1. Time series need to be augmented for including the bias term. For this, method apply() calls the method
+ *          augment().
+ *      2. Learning rate is selected automatically.
  *
  * The following options need to be set:
- * - dir           directory of UCR repository
- * - data          name of UCR dataset
- * - typeClf       type of classifier: 0 = warped softmax regression, 1 = max-linear softmax regression
- * - opts          options for classifiers, details are given below
- * - flagZNORM     toggles z-normalization: 0 = off, 1 = on
- * - bias          sets value of bias
- * - seed          seed for random number generator
+ *      - dir           directory of UCR repository
+ *      - data          name of UCR dataset
+ *      - typeClf       type of classifier: 0 = warped softmax regression, 1 = max-linear softmax regression
+ *      - opts          options for classifiers, details are given below
+ *      - flagZNORM     toggles z-normalization: 0 = off, 1 = on
+ *      - bias          sets value of bias
+ *      - seed          seed for random number generator
  *
  * Parameters of opts
- * -e [int]        elasticity; e > 0; "-e 1" corresponds to standard softmax regression
- * -l [real]       learning rate; 0 < l < 1 (is selected automatically)
- * -R [0|1|2]      type of regularization: 0 = no regularization, 1 = L1-regularization, 2 = L2-regularization
- * -r [real]       regularization parameter; 0 <= r <= 1
- * -b1 [real]      first momentum of ADAM optimizer
- * -b2 [real]      second momentum of ADAM optimizer
- * -T [int]        maximum number of epochs; T > 0
- * -S [int]        maximum number of epochs without improvement; S > 0
- * -o [0|1|2]      verbositiy: 0 = quiet, 1 = reports current number of epoch, 2 = reports progress in each epoch
+ *      -e [int]        elasticity; e > 0; "-e 1" corresponds to standard softmax regression
+ *      -l [real]       learning rate; 0 < l < 1 (is selected automatically)
+ *      -R [0|1|2]      type of regularization: 0 = no regularization, 1 = L1-regularization, 2 = L2-regularization
+ *      -r [real]       regularization parameter; 0 <= r <= 1
+ *      -b1 [real]      first momentum of ADAM optimizer
+ *      -b2 [real]      second momentum of ADAM optimizer
+ *      -T [int]        maximum number of epochs; T > 0
+ *      -S [int]        maximum number of epochs without improvement; S > 0
+ *      -o [0|1|2]      verbositiy: 0 = quiet, 1 = reports current number of epoch, 2 = reports progress in each epoch
  *
  * Output o = 2
- * number of epoch, current loss, current error rate, minimum loss, minimum error rate
+ *      number of epoch, current loss, current error rate, minimum loss, minimum error rate
  */
 public class Test {
 
